@@ -24,143 +24,143 @@ type UserHandler interface {
 }
 
 type userHandler struct {
-	repo repository.UserRepository
+	repo repository.UserRepository //repository
 }
 
 //NewUserHandler --> returns new user handler
 func NewUserHandler() UserHandler {
 
 	return &userHandler{
-		repo: repository.NewUserRepository(),
+		repo: repository.NewUserRepository(), //repository
 	}
 }
 
 func hashPassword(pass *string) {
-	bytePass := []byte(*pass)
-	hPass, _ := bcrypt.GenerateFromPassword(bytePass, bcrypt.DefaultCost)
-	*pass = string(hPass)
+	bytePass := []byte(*pass)                                             //convert string to byte
+	hPass, _ := bcrypt.GenerateFromPassword(bytePass, bcrypt.DefaultCost) //hash password
+	*pass = string(hPass)                                                 //convert byte to string
 }
 
 func comparePassword(dbPass, pass string) bool {
-	return bcrypt.CompareHashAndPassword([]byte(dbPass), []byte(pass)) == nil
+	return bcrypt.CompareHashAndPassword([]byte(dbPass), []byte(pass)) == nil //compare password
 }
 
 func (h *userHandler) GetAllUser(ctx *gin.Context) {
-	fmt.Println(ctx.Get("userID"))
-	user, err := h.repo.GetAllUser()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+	fmt.Println(ctx.Get("userID"))   //get userID from context
+	user, err := h.repo.GetAllUser() //get all user
+	if err != nil {                  //if error
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()}) //return error
+		return                                                                //return
 
 	}
-	ctx.JSON(http.StatusOK, user)
+	ctx.JSON(http.StatusOK, user) //return user
 
 }
 
 func (h *userHandler) GetUser(ctx *gin.Context) {
-	id := ctx.Param("id")
-	intID, err := strconv.Atoi(id)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	id := ctx.Param("id")          //get id from url
+	intID, err := strconv.Atoi(id) //convert string to int
+	if err != nil {                //if error
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()}) //return error
 		return
 	}
-	user, err := h.repo.GetUser(intID)
+	user, err := h.repo.GetUser(intID) //get user
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()}) //return error
 		return
 
 	}
-	ctx.JSON(http.StatusOK, user)
+	ctx.JSON(http.StatusOK, user) //return user
 
 }
 
 func (h *userHandler) SignInUser(ctx *gin.Context) {
-	var user model.User
-	if err := ctx.ShouldBindJSON(&user); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var user model.User                               //user
+	if err := ctx.ShouldBindJSON(&user); err != nil { //bind json
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()}) //return error
 	}
 
-	dbUser, err := h.repo.GetByEmail(user.Email)
+	dbUser, err := h.repo.GetByEmail(user.Email) //get user by email
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"msg": "No Such User Found"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"msg": "No Such User Found"}) //return error
 		return
 
 	}
 	if isTrue := comparePassword(dbUser.Password, user.Password); isTrue {
-		fmt.Println("user before", dbUser.ID)
-		token := GenerateToken(dbUser.ID)
-		ctx.JSON(http.StatusOK, gin.H{"msg": "Successfully SignIN", "token": token})
+		fmt.Println("user before", dbUser.ID)                                        //get userID
+		token := GenerateToken(dbUser.ID)                                            //generate token
+		ctx.JSON(http.StatusOK, gin.H{"msg": "Successfully SignIN", "token": token}) //return token
 		return
 	}
-	ctx.JSON(http.StatusInternalServerError, gin.H{"msg": "Password not matched"})
+	ctx.JSON(http.StatusInternalServerError, gin.H{"msg": "Password not matched"}) //return error
 	return
 
 }
 
 func (h *userHandler) AddUser(ctx *gin.Context) {
-	var user model.User
-	if err := ctx.ShouldBindJSON(&user); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var user model.User                               //user
+	if err := ctx.ShouldBindJSON(&user); err != nil { //bind json
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()}) //return error
 		return
 	}
-	hashPassword(&user.Password)
-	user, err := h.repo.AddUser(user)
+	hashPassword(&user.Password)      //hash password
+	user, err := h.repo.AddUser(user) //add user
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()}) //return error
 		return
 
 	}
-	user.Password = ""
-	ctx.JSON(http.StatusOK, user)
+	user.Password = ""            //remove password
+	ctx.JSON(http.StatusOK, user) //return user
 
 }
 
 func (h *userHandler) UpdateUser(ctx *gin.Context) {
-	var user model.User
-	if err := ctx.ShouldBindJSON(&user); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var user model.User                               //user
+	if err := ctx.ShouldBindJSON(&user); err != nil { //bind json
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()}) //return error
 		return
 	}
-	id := ctx.Param("user")
-	intID, err := strconv.Atoi(id)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	id := ctx.Param("user")        //get id from url
+	intID, err := strconv.Atoi(id) //convert string to int
+	if err != nil {                //if error
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()}) //return error
 	}
-	user.ID = uint(intID)
-	user, err = h.repo.UpdateUser(user)
+	user.ID = uint(intID)               //set id
+	user, err = h.repo.UpdateUser(user) //update user
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()}) //return error
 		return
 
 	}
-	ctx.JSON(http.StatusOK, user)
+	ctx.JSON(http.StatusOK, user) //return user
 
 }
 
 func (h *userHandler) DeleteUser(ctx *gin.Context) {
-	var user model.User
-	id := ctx.Param("user")
-	intID, _ := strconv.Atoi(id)
-	user.ID = uint(intID)
-	user, err := h.repo.DeleteUser(user)
+	var user model.User                  //user
+	id := ctx.Param("user")              //get id from url
+	intID, _ := strconv.Atoi(id)         //convert string to int
+	user.ID = uint(intID)                //set id
+	user, err := h.repo.DeleteUser(user) //delete user
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()}) //return error
 		return
 
 	}
-	ctx.JSON(http.StatusOK, user)
+	ctx.JSON(http.StatusOK, user) //return user
 
 }
 
 func (h *userHandler) GetProductOrdered(ctx *gin.Context) {
 
-	userStr := ctx.Param("user")
-	userID, _ := strconv.Atoi(userStr)
-	if products, err := h.repo.GetProductOrdered(userID); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
+	userStr := ctx.Param("user")                                       //get user from url
+	userID, _ := strconv.Atoi(userStr)                                 //convert string to int
+	if products, err := h.repo.GetProductOrdered(userID); err != nil { //get product ordered
+		ctx.JSON(http.StatusBadRequest, gin.H{ //return error
+			"error": err.Error(), //error
 		})
 	} else {
-		ctx.JSON(http.StatusOK, products)
+		ctx.JSON(http.StatusOK, products) //return product
 	}
 }

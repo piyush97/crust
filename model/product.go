@@ -23,6 +23,9 @@ type Product struct {
 
 }
 
+/**
+ * Get the table name of the model.
+ */
 func (Product) TableName() string {
 	return "products"
 }

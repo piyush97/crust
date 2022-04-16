@@ -25,6 +25,9 @@ type User struct {
 
 }
 
+/**
+ * Get the table name of the model.
+ */
 func (User) TableName() string {
 	return "users"
 }

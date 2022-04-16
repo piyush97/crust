@@ -11,13 +11,13 @@ import (
  * @return UserRepository
  */
 type UserRepository interface {
-	AddUser(model.User) (model.User, error)
-	GetUser(int) (model.User, error)
-	GetByEmail(string) (model.User, error)
-	GetAllUser() ([]model.User, error)
-	UpdateUser(model.User) (model.User, error)
-	DeleteUser(model.User) (model.User, error)
-	GetProductOrdered(int) ([]model.Order, error)
+	AddUser(model.User) (model.User, error)       //AddUser
+	GetUser(int) (model.User, error)              //GetUser
+	GetByEmail(string) (model.User, error)        //GetByEmail
+	GetAllUser() ([]model.User, error)            //GetAllUser
+	UpdateUser(model.User) (model.User, error)    //UpdateUser
+	DeleteUser(model.User) (model.User, error)    //DeleteUser
+	GetProductOrdered(int) ([]model.Order, error) //GetProductOrdered
 }
 
 type userRepository struct {

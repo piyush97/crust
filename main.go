@@ -14,6 +14,17 @@ func loadenv() {
 	}
 }
 
+// @title           Crust API
+// @version         1.0
+// @description     Crust Api Server.
+
+// @contact.name   Piyush Mehta
+
+// @license.name  Apache 2.0
+
+// @host      localhost:8090
+// @BasePath  /api
+
 func main() {
 	fmt.Println("Main Application Starts")
 	//Loading Environmental Variable

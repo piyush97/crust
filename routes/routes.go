@@ -6,6 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/piyush97/crust/handler"
 	"github.com/piyush97/crust/middleware"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
 func RunAPI(address string) error {
@@ -44,6 +46,8 @@ func RunAPI(address string) error {
 		productProtectedRoutes.PUT("/:product", productHandler.UpdateProduct)    //update product
 		productProtectedRoutes.DELETE("/:product", productHandler.DeleteProduct) //delete product
 	}
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler)) //swagger
 
 	return r.Run(address) //run server
 

@@ -18,10 +18,10 @@ import "gorm.io/gorm"
 type User struct {
 	gorm.Model
 
-	Name     string  `json:"name" binding:"required"`                      // The name of a user.
-	Email    *string `json:"email" binding:"required,email" gorm:"unique"` // The email of a user.
-	Password string  `json:"password" binding:"required"`                  // The password of a user.
-	Role     string  `json:"role"`                                         // The role of a user.
+	Name     string `json:"name" binding:"required"`                      // The name of a user.
+	Email    string `json:"email" binding:"required,email" gorm:"unique"` // The email of a user.
+	Password string `json:"password" binding:"required"`                  // The password of a user.
+	Role     string `json:"role"`                                         // The role of a user.
 
 }
 

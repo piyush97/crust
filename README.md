@@ -23,6 +23,15 @@ make
 /api/user
 /api/user/register
 /api/user/signin
+/api/:user
+
+# product api
+
+/api/product
+
+# swagger
+/swagger/index.html [WIP]
+
 
 ```
 
